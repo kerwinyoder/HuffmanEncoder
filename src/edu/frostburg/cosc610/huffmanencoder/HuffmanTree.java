@@ -18,19 +18,27 @@ public class HuffmanTree<E> {
     private Map<E, String> map;
 
     /**
-     * Creates a new HuffmanTree with the given element and priority. The new
-     * tree consists of a single node.
+     * Creates a new HuffmanTree with the given element and priority. tree
+     * consists of a single node.
      *
      * @param element the element to store in the new Huffman Tree
      * @param priority the priority of the element
      */
     public HuffmanTree(E element, int priority) {
+        if (element == null) {
+            throw new IllegalArgumentException("Attempted to create a new tree with null data");
+        }
+        if (priority < 0) {
+            throw new IllegalArgumentException("The minimum allowable priority is 0");
+        }
         root = new LeafNode(element, priority);
     }
 
     /**
      * Creates a new HuffmanTree by creating a new root node and attaching the
-     * given trees as the left and right subtrees of the node.
+     * given trees as the left and right subtrees of the node. The priority of
+     * the new root node is equal to the sum of the priorities of the two
+     * previous root nodes
      *
      * @param left the left subtree of the new tree
      * @param right the right subtree of the new tree
@@ -98,8 +106,8 @@ public class HuffmanTree<E> {
      */
     private static class InternalNode extends Node {
 
-        Node left;
-        Node right;
+        private Node left;
+        private Node right;
 
         private InternalNode(int priority, Node left, Node right) {
             super(priority);
