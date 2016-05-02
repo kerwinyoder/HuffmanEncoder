@@ -42,7 +42,9 @@ public class HuffmanTree<E> {
 
     /**
      * Gets a map containing the elements and their associated codes
-     * @return a map containing the elements as keys and their associated codes as values
+     *
+     * @return a map containing the elements as keys and their associated codes
+     * as values
      */
     public Map<E, String> getMap() {
         if (map == null) {
@@ -51,6 +53,15 @@ public class HuffmanTree<E> {
             initializeMap(root, builder);
         }
         return map;
+    }
+
+    /**
+     * Returns the priority of the root node.
+     *
+     * @return the priority of the root node
+     */
+    public int getPriority() {
+        return root.priority;
     }
 
     /*
