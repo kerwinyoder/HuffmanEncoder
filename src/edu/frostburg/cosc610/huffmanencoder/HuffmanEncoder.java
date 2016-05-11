@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.Map;
 
 /**
- * A Huffman Encoder for ASCII Characters (including the extended ASCII codes).
+ * A Huffman Encoder for text files encoded in up to 16-bit Unicode characters.
  * Encoded data is returned as a string of bits rather than a byte stream.
  *
  * @author Kerwin Yoder
@@ -21,8 +21,8 @@ public class HuffmanEncoder {
 
     /**
      * Creates a new HuffmanEncoder using the given frequencies table. The
-     * frequency for each ASCII character is assumed to be stored at the index
-     * of the characters ASCII code value (e.g. the frequency of 'A' is at 65)
+     * frequency for each Unicode character is assumed to be stored at the index
+     * of the character's Unicode code value (e.g. the frequency of 'A' is at 65)
      *
      * @param frequencies the frequencies table
      */
@@ -99,7 +99,7 @@ public class HuffmanEncoder {
         }
         StringBuilder builder = new StringBuilder();
         //use string literals to force correct widths for alignment purposes
-        builder.append(String.format("Statistics%n%n%5s%7s%16s%17s%n", "ASCII", "Char", "Code", "Frequency"));
+        builder.append(String.format("Statistics%n%n%5s%7s%16s%17s%n", "Unicode", "Char", "Code", "Frequency"));
         int frequency;
         int length = frequencies.length;
         for (int i = 0; i < length; ++i) {
@@ -117,7 +117,7 @@ public class HuffmanEncoder {
     }
 
     /*
-     * Analyzes the frequencies of characters in the file with the given filename. Only ASCII characters are allowed
+     * Analyzes the frequencies of characters in the file with the given filename. Only 16-bit Unicode characters are allowed
      * @param filename the filename of the file to be analyzed
      */
     private void analyzeFrequencies(String filename) {
@@ -129,11 +129,14 @@ public class HuffmanEncoder {
             while (bytesRead != -1) {
                 for (int i = 0; i < bytesRead; ++i) {
                     index = (int) buffer[i];
-                    if (index > 255) {
-                        System.out.printf("The file %s contains non-ASCII characters.", filename);
+                    if(index > 255) {
+                        expand();
+                    }
+                    else if (index > 65535) {
+                        System.out.printf("The file %s contains characters not in the 16-bit Unicode character set.", filename);
                         System.exit(1);
                     }
-                    frequencies[(int) buffer[i]]++; //?????
+                    frequencies[(int) buffer[i]]++;
                 }
                 bytesRead = reader.read(buffer);
             }
@@ -171,5 +174,16 @@ public class HuffmanEncoder {
             queue.insert(newTree, newTree.getPriority());
         }
         tree = queue.remove();
+    }
+
+    /*
+     * Expands the frequency table to support 16-bit Unicode
+     */
+    private void expand() {
+        if(frequencies.length == 256) {
+            int[] temp = new int[65536];
+            System.arraycopy(frequencies, 0, temp, 0, 0);
+            frequencies = temp;
+        }
     }
 }
